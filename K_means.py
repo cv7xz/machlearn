@@ -61,6 +61,7 @@ def kmeans(data, k):
             # 重新计算质心(取所有属于该簇样品的按列平均值)
             centroids[j, :] = np.mean(pointsInCluster, axis=0)
 
+    
     return centroids, clusterData
 
 # 显示分类结果
@@ -84,13 +85,6 @@ def showCluster(data, k, centroids, clusterData):
 
 # 设置k值
 k = 6
-'''
-centroids, clusterData = kmeans(data, k)
-if np.isnan(centroids).any():
-    print("Error")
-else:
-    print('Cluster complete!')
-'''
 
 # 预测函数（因为聚类一旦完成，预测数据所属类别就变成了有监督分类问题，将预测数据归属于距离最近的类别即可，距离采用欧氏距离）
 def prediction(datas, k, centroids):
@@ -150,23 +144,27 @@ for i in range(-6, 2):
     for j in range(50):
         centroids, clusterData = kmeans(data, k)
         loss = sum(clusterData[:, 1]) / data.shape[0]
+        
         if loss < min_loss:
             min_loss = loss
             min_loss_centroids = centroids
             min_loss_clusterData = clusterData
     centroids = min_loss_centroids
     clusterData = min_loss_clusterData
-    means_list.append(centroids)
-
     
+    means_list.append(centroids)
+    if(i == 1):
+        np.savetxt(f"data{i}.txt",clusterData)
+        np.savetxt(f"center{i}.txt",centroids)
     pngname = f'png_{i}.png'
     #Plot(data, k, centroids, clusterData, pngname)
     # 计算每个簇误差的方差
-    cluster_ids = np.unique(clusterData[:, 0])  # 获取所有簇的唯一标识
+    cluster_ids = np.unique(clusterData[:, 0])  # 获取所有簇的唯一标识 返回0，1，2，3，4，5
+    print(cluster_ids)
     variances = []
     for cluster_id in cluster_ids:
         errors = clusterData[clusterData[:, 0] == cluster_id][:, 1]  # 获取属于当前簇的所有误差
-        variance = np.var(errors)  # 计算误差的方差
+        variance = np.mean(np.square(errors)) # 计算误差的方差
         variances.append(variance)
     
     
@@ -184,14 +182,14 @@ for i in range(-6, 2):
 
 #print('variances_list:', variances_list, '\nmeans_list:', means_list)
 
-# 设置子图的布局
+#设置子图的布局
 num_plots = len(variances_list[0])
 num_rows = 2  # 子图行数
 num_cols = num_plots // num_rows  # 子图列数
 if num_plots % num_rows != 0:
     num_cols += 1
 
-# 创建画布和子图
+#创建画布和子图
 fig, axes = plt.subplots(num_rows, num_cols, figsize=(15, 8))
 
 # 绘制每个子图
@@ -226,7 +224,7 @@ plt.savefig('mean_trends.png')
 # 显示图像
 plt.show()
 
-# 计算每组中心点的两两距离最大值,得到一般方差
+#计算每组中心点的两两距离最大值,得到一般方差
 common_v = []
 for means in means_list:
     distances = []
