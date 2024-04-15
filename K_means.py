@@ -160,7 +160,6 @@ for i in range(-6, 2):
     #Plot(data, k, centroids, clusterData, pngname)
     # 计算每个簇误差的方差
     cluster_ids = np.unique(clusterData[:, 0])  # 获取所有簇的唯一标识 返回0，1，2，3，4，5
-    print(cluster_ids)
     variances = []
     for cluster_id in cluster_ids:
         errors = clusterData[clusterData[:, 0] == cluster_id][:, 1]  # 获取属于当前簇的所有误差
@@ -174,7 +173,7 @@ for i in range(-6, 2):
     sorted_variances = np.array(variances)[sorted_indices]
 
     #新添的获得排好序的均值点列表
-    meanListX.append(sorted_centroid[:,0])  #sorted_centroid_x 里面为6个x坐标数据
+    meanListX.append(sorted_centroid[:,0])  #sorted_centroid 里面为坐标数据
     meanListY.append(sorted_centroid[:,1])
     variances_list.append(sorted_variances)
     
@@ -203,6 +202,14 @@ for i in range(num_rows):
             ax.set_xlabel('Distance')
             ax.set_ylabel('Variance')
 
+# 调整子图之间的间距
+plt.tight_layout()
+
+# 保存图像
+plt.savefig('variance_trends.png')
+
+# 显示图像
+plt.show()
 fig, axes = plt.subplots(num_rows, num_cols, figsize=(15, 8))
 
 # 绘制每个子图
