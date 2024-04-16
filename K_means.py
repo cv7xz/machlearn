@@ -157,7 +157,7 @@ for i in range(-6, 2):
     
     means_list.append(centroids)
     np.savetxt(f"data{i}.txt",clusterData)
-    np.savetxt(f"center{i}.txt",centroids)
+    
     pngname = f'png_{i}.png'
     #Plot(data, k, centroids, clusterData, pngname)
     # 计算每个簇误差的方差
@@ -174,7 +174,7 @@ for i in range(-6, 2):
     sorted_indices = np.argsort(centroids[:, 0])
     sorted_centroid = np.array(centroids)[sorted_indices]
     sorted_variances = np.array(variances)[sorted_indices]
-
+    np.savetxt(f"center{i}.txt",sorted_centroid)
     #新添的获得排好序的均值点列表
     meanListX.append(sorted_centroid[:,0])  #sorted_centroid 里面为坐标数据
     meanListY.append(sorted_centroid[:,1])
