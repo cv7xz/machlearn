@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import datetime
 
 # 读取数据
 data = np.genfromtxt('data_0.txt', delimiter=' ')
@@ -130,6 +131,8 @@ variances_list = []
 means_list = []   #绘图时不用这个 这个没有排序
 meanListX = []
 meanListY = []  #绘图时用这两个列表， 因为平面图纵坐标只有一个 就分开了x和y
+
+starttime = datetime.datetime.now()
 for i in range(-6, 2):
     filename = f'data_{i}.txt'
     data = np.genfromtxt(filename, delimiter=' ')
@@ -153,9 +156,8 @@ for i in range(-6, 2):
     clusterData = min_loss_clusterData
     
     means_list.append(centroids)
-    if(i == 1):
-        np.savetxt(f"data{i}.txt",clusterData)
-        np.savetxt(f"center{i}.txt",centroids)
+    np.savetxt(f"data{i}.txt",clusterData)
+    np.savetxt(f"center{i}.txt",centroids)
     pngname = f'png_{i}.png'
     #Plot(data, k, centroids, clusterData, pngname)
     # 计算每个簇误差的方差
@@ -165,6 +167,7 @@ for i in range(-6, 2):
         errors = clusterData[clusterData[:, 0] == cluster_id][:, 1]  # 获取属于当前簇的所有误差
         variance = np.mean(np.square(errors)) # 计算误差的方差
         variances.append(variance)
+        np.savetxt(f"errors{cluster_id}.txt",errors)
     
     
     # 将中心点的横坐标进行排序，并根据排序结果对方差进行重新排列
@@ -253,3 +256,6 @@ plt.grid(True)
 # 保存图像
 plt.savefig('the common variance.png')
 plt.show()
+
+endtime = datetime.datetime.now()
+print((endtime - starttime).seconds)
