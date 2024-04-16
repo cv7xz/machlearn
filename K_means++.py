@@ -177,7 +177,7 @@ for i in range(-6, 2):
             min_loss = loss
             min_loss_centroids = centroids
             min_loss_clusterData = clusterData
-            print("损失函数值减小  优化质心")
+            print("!!!!!!损失函数值减小  优化质心")
     centroids = min_loss_centroids
     clusterData = min_loss_clusterData
     
@@ -257,11 +257,29 @@ for i in range(num_rows):
 plt.tight_layout()
 
 # 保存图像
-plt.savefig('mean_trends.png')
+plt.savefig('mean_trend_x.png')
 
 # 显示图像
 plt.show()
+fig, axes = plt.subplots(num_rows, num_cols, figsize=(15, 8))
+# 绘制每个子图
+for i in range(num_rows):
+    for j in range(num_cols):
+        idx = i * num_cols + j
+        if idx < num_plots:
+            ax = axes[i, j] if num_rows > 1 else axes[j]
+            ax.plot(range(-6, 2), [v[idx] for v in meanListY], marker='o')
+            ax.set_title(f'Variance {idx+1}')
+            ax.set_xlabel('Distance')
+            ax.set_ylabel('meanY')
+# 调整子图之间的间距
+plt.tight_layout()
 
+# 保存图像
+plt.savefig('mean_trends_y.png')
+
+# 显示图像
+plt.show()
 #计算每组中心点的两两距离最大值,得到一般方差
 common_v = []
 for means in means_list:
