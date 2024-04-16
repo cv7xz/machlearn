@@ -9,13 +9,17 @@ data = np.genfromtxt('data_0.txt', delimiter=' ')
 def euclDistance(vector1, vector2):
     return np.sqrt(sum((vector1 - vector2)**2))
 
-time = 0
+time = 0    #记录当前跑到了第几个垂直间隔d   time = 0 对应 d=-6  time = d + 6
+IterTimes = 0  #记录迭代次数   是主要的优化指标（时间方面）
 KmeansTime = 50 #指调用多少次kmeans函数(避免陷入局部最优)
+
 # 初始化质心（初始化各个类别的中心点）
 def initCentroids(data, k, times):
     numSample,dim = data.shape
     index = np.random.randint(0,numSample)
+
     centroid = np.array(data[index,:]).reshape(1,-1)   #1维变成2维数组  一行n列
+    print("---------------------------------")
     print(f"({(6+time)*KmeansTime+times}/{8*KmeansTime})距离d={time}, 第{times}次选初始质心")
     cnt = 1
     while cnt < k:
@@ -28,7 +32,7 @@ def initCentroids(data, k, times):
                 dis_square_ij = np.square(centroid[j,0] - data[i,0]) + np.square(centroid[j,1] - data[i,1]) #第j个质心和第i个样本点之间的距离
                 if(minDis > dis_square_ij):
                     minDis = dis_square_ij  #获得了第i个样本点 对所有质心的距离中 最小的距离    我们的目的是找1000个样本点中 这个最小距离的最大值
-            
+
             if(maxDis < minDis):
                 maxDis = minDis
                 maxDisDataIndex = i 
@@ -50,6 +54,8 @@ def kmeans(data, k,times):   #times用于指示当前第几次聚类 打印用
     cnt = 0
     while clusterChanged:
         cnt += 1
+        global IterTimes   #如果没有这行代码  下一句的IterTimes+=1 
+        IterTimes += 1   
         clusterChanged = False
         # 遍历样本
         for i in range(numSample):
@@ -98,8 +104,8 @@ def showCluster(data, k, centroids, clusterData):
     mark = ['*r', '*g', '*b', '*k', '+b', 'sb', 'db', '<b', 'pb']
     # 画质心点
     for i in range(k):
-        plt.plot(centroids[i, 0], centroids[i, 1], mark[i], markersize=20)
-    # plt.show()
+        plt.plot(centroids[i, 0], centroids[i, 1], mark[7], markersize=20)
+    plt.show()
 
 # 设置k值
 k = 6
@@ -165,12 +171,13 @@ for i in range(-6, 2):
     min_loss_clusterData = np.array([])
     for j in range(KmeansTime):    #共执行50*8 = 400次
         centroids, clusterData = kmeans(data, k,j)
-        loss = sum(clusterData[:, 1]) / data.shape[0]
-        
+        loss = np.mean((np.square(clusterData[:, 1])))
+        print(f"这一次的损失函数值为{loss}")
         if loss < min_loss:
             min_loss = loss
             min_loss_centroids = centroids
             min_loss_clusterData = clusterData
+            print("损失函数值减小  优化质心")
     centroids = min_loss_centroids
     clusterData = min_loss_clusterData
     
@@ -201,7 +208,8 @@ for i in range(-6, 2):
     
 
 endtime = datetime.datetime.now()
-print((endtime - starttime).seconds)
+print(f"一共用时{(endtime - starttime).seconds}.{(endtime - starttime).microseconds//1000}秒")
+print(f"一共迭代（kmeans的一次步骤）{IterTimes}次")
 #print('variances_list:', variances_list, '\nmeans_list:', means_list)
 
 #设置子图的布局
