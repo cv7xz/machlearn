@@ -105,7 +105,7 @@ def showCluster(data, k, centroids, clusterData):
     # 画质心点
     for i in range(k):
         plt.plot(centroids[i, 0], centroids[i, 1], mark[7], markersize=20)
-    plt.show()
+    #plt.show()
 
 # 设置k值
 k = 6
@@ -185,7 +185,7 @@ for i in range(-6, 2):
     np.savetxt(f"data{i}.txt",clusterData)
     
     pngname = f'png_{i}.png'
-    #Plot(data, k, centroids, clusterData, pngname)
+    Plot(data, k, centroids, clusterData, pngname)
     # 计算每个簇误差的方差
     cluster_ids = np.unique(clusterData[:, 0])  # 获取所有簇的唯一标识 返回0，1，2，3，4，5
     variances = []
@@ -219,7 +219,7 @@ num_cols = num_plots // num_rows  # 子图列数
 if num_plots % num_rows != 0:
     num_cols += 1
 
-#创建画布和子图
+#创建画布和子图         ------------------------------------------方差
 fig, axes = plt.subplots(num_rows, num_cols, figsize=(15, 8))
 
 # 绘制每个子图
@@ -241,9 +241,11 @@ plt.savefig('variance_trends.png')
 
 # 显示图像
 plt.show()
+
+#------------------------------------------meanX
 fig, axes = plt.subplots(num_rows, num_cols, figsize=(15, 8))
 
-# 绘制每个子图
+# 绘制每个子图  
 for i in range(num_rows):
     for j in range(num_cols):
         idx = i * num_cols + j
@@ -259,7 +261,7 @@ plt.tight_layout()
 # 保存图像
 plt.savefig('mean_trend_x.png')
 
-# 显示图像
+# 显示图像 ------------------------------------------meanY
 plt.show()
 fig, axes = plt.subplots(num_rows, num_cols, figsize=(15, 8))
 # 绘制每个子图
