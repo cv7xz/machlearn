@@ -11,17 +11,28 @@ def euclDistance(vector1, vector2):
 
 # 初始化质心（初始化各个类别的中心点）
 def initCentroids(data, k):
-    numSample, dim = data.shape
-    # k个质心
-    centroids = np.zeros((k, dim))
-    # 随机选出k个质心
-    for i in range(k):
-        # 随机选取一个样本的索引
-        index = int(np.random.uniform(0, numSample))
-        # 初始化质心
-        centroids[i, :] = data[index, :]   #6*2 6个 2指(x,y)坐标点
-    return centroids
-
+    numSample,dim = data.shape
+    index = np.random.randint(0,numSample)
+    centroid = np.array(data[index,:]).reshape(1,-1)   #1维变成2维数组  一行n列
+    print(centroid)
+    cnt = 1
+    while cnt < k:
+        maxDis = 0
+        maxDisDataIndex = -1
+        for i in range(numSample):
+            minDis = 10000
+            for j in range(cnt):
+                dis_square_ij = np.square(centroid[j,0] - data[i,0]) + np.square(centroid[j,1] - data[i,1]) #第j个质心和第i个样本点之间的距离
+                if(minDis > dis_square_ij):
+                    minDis = dis_square_ij  #获得了第i个样本点 对所有质心的距离中 最小的距离    我们的目的是找1000个样本点中 这个最小距离的最大值
+            
+            if(maxDis < minDis):
+                maxDis = minDis
+                maxDisDataIndex = i 
+        
+        centroid = np.vstack((centroid,data[maxDisDataIndex,:]))
+        cnt += 1
+    return centroid
 # k-means算法函数
 def kmeans(data, k):
     # 计算样本个数
