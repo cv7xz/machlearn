@@ -9,18 +9,21 @@ data = np.genfromtxt('data_0.txt', delimiter=' ')
 def euclDistance(vector1, vector2):
     return np.sqrt(sum((vector1 - vector2)**2))
 
+time = 0
+KmeansTime = 50 #指调用多少次kmeans函数(避免陷入局部最优)
 # 初始化质心（初始化各个类别的中心点）
-def initCentroids(data, k):
+def initCentroids(data, k, times):
     numSample,dim = data.shape
     index = np.random.randint(0,numSample)
     centroid = np.array(data[index,:]).reshape(1,-1)   #1维变成2维数组  一行n列
-    print(centroid)
+    print(f"({(6+time)*KmeansTime+times}/{8*KmeansTime})距离d={time}, 第{times}次选初始质心")
     cnt = 1
     while cnt < k:
         maxDis = 0
         maxDisDataIndex = -1
         for i in range(numSample):
             minDis = 10000
+
             for j in range(cnt):
                 dis_square_ij = np.square(centroid[j,0] - data[i,0]) + np.square(centroid[j,1] - data[i,1]) #第j个质心和第i个样本点之间的距离
                 if(minDis > dis_square_ij):
@@ -34,7 +37,7 @@ def initCentroids(data, k):
         cnt += 1
     return centroid
 # k-means算法函数
-def kmeans(data, k):
+def kmeans(data, k,times):   #times用于指示当前第几次聚类 打印用
     # 计算样本个数
     numSample = data.shape[0]
     # 保存样品属性（第一列保存该样品属于哪个簇，第二列保存该样品与它所属簇的误差（该样品到质心的距离））
@@ -42,8 +45,11 @@ def kmeans(data, k):
     # 确定质心是否需要改变
     clusterChanged = True
     # 初始化质心
-    centroids = initCentroids(data, k)
+    centroids = initCentroids(data, k, times)
+
+    cnt = 0
     while clusterChanged:
+        cnt += 1
         clusterChanged = False
         # 遍历样本
         for i in range(numSample):
@@ -73,7 +79,7 @@ def kmeans(data, k):
             # 重新计算质心(取所有属于该簇样品的按列平均值)
             centroids[j, :] = np.mean(pointsInCluster, axis=0)
 
-    
+    print(f"迭代{cnt}次后 每个样本所属类不再变化")
     return centroids, clusterData
 
 # 显示分类结果
@@ -144,7 +150,9 @@ meanListX = []
 meanListY = []  #绘图时用这两个列表， 因为平面图纵坐标只有一个 就分开了x和y
 
 starttime = datetime.datetime.now()
+
 for i in range(-6, 2):
+    time = i
     filename = f'data_{i}.txt'
     data = np.genfromtxt(filename, delimiter=' ')
 
@@ -155,8 +163,8 @@ for i in range(-6, 2):
     min_loss = 10000
     min_loss_centroids = np.array([])
     min_loss_clusterData = np.array([])
-    for j in range(50):
-        centroids, clusterData = kmeans(data, k)
+    for j in range(KmeansTime):    #共执行50*8 = 400次
+        centroids, clusterData = kmeans(data, k,j)
         loss = sum(clusterData[:, 1]) / data.shape[0]
         
         if loss < min_loss:
@@ -192,7 +200,8 @@ for i in range(-6, 2):
     variances_list.append(sorted_variances)
     
 
-
+endtime = datetime.datetime.now()
+print((endtime - starttime).seconds)
 #print('variances_list:', variances_list, '\nmeans_list:', means_list)
 
 #设置子图的布局
@@ -268,5 +277,3 @@ plt.grid(True)
 plt.savefig('the common variance.png')
 plt.show()
 
-endtime = datetime.datetime.now()
-print((endtime - starttime).seconds)
