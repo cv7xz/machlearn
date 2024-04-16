@@ -11,7 +11,21 @@ def euclDistance(vector1, vector2):
 
 time = 0    #记录当前跑到了第几个垂直间隔d   time = 0 对应 d=-6  time = d + 6
 IterTimes = 0  #记录迭代次数   是主要的优化指标（时间方面）
-KmeansTime = 50 #指调用多少次kmeans函数(避免陷入局部最优)
+KmeansTime = 40 #指调用多少次kmeans函数(避免陷入局部最优)
+
+# def initCentroids(data, k,times):
+#     numSample, dim = data.shape
+#     print("---------------------------------")
+#     print(f"({(6+time)*KmeansTime+times}/{8*KmeansTime})距离d={time}, 第{times}次选初始质心")
+#     # k个质心
+#     centroids = np.zeros((k, dim))
+#     # 随机选出k个质心
+#     for i in range(k):
+#         # 随机选取一个样本的索引
+#         index = int(np.random.uniform(0, numSample))
+#         # 初始化质心
+#         centroids[i, :] = data[index, :]
+#     return centroids
 
 # 初始化质心（初始化各个类别的中心点）
 def initCentroids(data, k, times):
