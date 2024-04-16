@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import datetime
+from threading import Thread
 
 # 读取数据
 data = np.genfromtxt('data_0.txt', delimiter=' ')
@@ -171,6 +172,27 @@ meanListY = []  #绘图时用这两个列表， 因为平面图纵坐标只有�
 ssum= [] #每个d值计算得到的6簇的总方差
 starttime = datetime.datetime.now()
 
+
+threads = [None] * 10
+r1 = [None] * 10
+r2 = [None] * 10
+threadingNum = 2
+def StartKmeans(result1,result2,index):
+    min_loss = 10000
+    min_loss_centroids = np.array([])
+    min_loss_clusterData = np.array([])
+    for j in range(KmeansTime//threadingNum):    #共执行50*8 = 400次
+        centroids, clusterData = kmeans(data, k,j)
+        loss = np.mean((np.square(clusterData[:, 1])))
+        print(f"这一次的损失函数值为{loss}")
+        if loss < min_loss:
+            min_loss = loss
+            min_loss_centroids = centroids
+            min_loss_clusterData = clusterData
+            print("!!!!!!损失函数值减小  优化质心")
+    
+    result1[index] = min_loss_centroids
+    result2[index] = min_loss_clusterData
 for i in range(-6, 2):
     time = i
     filename = f'data_{i}.txt'
@@ -180,20 +202,16 @@ for i in range(-6, 2):
     优化初始质心(保证质心不会仅仅局部收敛)：
     通过多次随机选择质心，最终选择代价值最小的质心
     '''
-    min_loss = 10000
-    min_loss_centroids = np.array([])
-    min_loss_clusterData = np.array([])
-    for j in range(KmeansTime):    #共执行50*8 = 400次
-        centroids, clusterData = kmeans(data, k,j)
-        loss = np.mean((np.square(clusterData[:, 1])))
-        print(f"这一次的损失函数值为{loss}")
-        if loss < min_loss:
-            min_loss = loss
-            min_loss_centroids = centroids
-            min_loss_clusterData = clusterData
-            print("!!!!!!损失函数值减小  优化质心")
-    centroids = min_loss_centroids
-    clusterData = min_loss_clusterData
+
+    for i in range(threadingNum):
+        threads[i] = Thread(target=StartKmeans,args=(r1,r2,i))
+        threads[i].start()
+    
+    for i in range(threadingNum):
+        threads[i].join()
+    
+    centroids = r1[0]
+    clusterData = r2[0]
     
     means_list.append(centroids)
     np.savetxt(f"data{i}.txt",clusterData)
