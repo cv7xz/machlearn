@@ -262,16 +262,28 @@ fig, axes = plt.subplots(num_rows, num_cols, figsize=(15, 8))
 # 绘制每个子图  
 for i in range(num_rows):
     for j in range(num_cols):
-        idx = i * num_cols + j
-        if idx < num_plots:
-            ax = axes[i, j] if num_rows > 1 else axes[j]
-            ax.plot(range(-6, 2), [v[idx] for v in meanListX], marker='o')
-            ax.set_title(f'Variance {idx+1}')
-            ax.set_xlabel('Distance')
-            ax.set_ylabel('meanX')
+        ax = axes[i, j] if num_rows > 1 else axes[j]
+        rank=i*num_cols+j #重心序号
+        for t in range(7): #d数量
+            ax.scatter(meanListX[t][rank], meanListY[t][rank], color='red')
+            ax.plot([meanListX[t][rank], meanListX[t+1][rank]], [meanListY[t][rank], meanListY[t+1][rank]], color='blue')
+        ax.scatter(meanListX[7][rank], meanListY[7][rank], color='black')
+        ax.set_title(f'means-{rank+1} change')
+        ax.set_xlabel('x')
+        ax.set_ylabel('y')
+        ax.set_xlim(-12+rank*5, -2+rank*5)
+#for i in range(num_rows):
+#    for j in range(num_cols):
+#        idx = i * num_cols + j
+#        if idx < num_plots:
+#            ax = axes[i, j] if num_rows > 1 else axes[j]
+#            ax.plot(range(-6, 2), [v[idx] for v in meanListX], marker='o')
+#            ax.set_title(f'Variance {idx+1}')
+#            ax.set_xlabel('Distance')
+#            ax.set_ylabel('meanX')
 # 调整子图之间的间距
 plt.tight_layout()
-
+plt.axis('equal') 
 # 保存图像
 plt.savefig('mean_trend_x.png')
 
