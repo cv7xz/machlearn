@@ -154,7 +154,7 @@ variances_list = []
 means_list = []   #绘图时不用这个 这个没有排序
 meanListX = []
 meanListY = []  #绘图时用这两个列表， 因为平面图纵坐标只有一个 就分开了x和y
-
+ssum= [] #每个d值计算得到的6簇的总方差
 starttime = datetime.datetime.now()
 
 for i in range(-6, 2):
@@ -194,7 +194,7 @@ for i in range(-6, 2):
         variance = np.mean(np.square(errors)) # 计算误差的方差
         variances.append(variance)
         np.savetxt(f"errors{cluster_id}.txt",errors)
-    
+    ssum.append(np.sum(variances)) # 计算方差和
     
     # 将中心点的横坐标进行排序，并根据排序结果对方差进行重新排列
     sorted_indices = np.argsort(centroids[:, 0])
@@ -276,11 +276,13 @@ for means in means_list:
 
 # 创建新的图形，并绘制额外数据的图形
 plt.figure(figsize=(8, 6))
-plt.plot(range(-6, 2), common_v, marker='o', color='red')
+plt.plot(range(-6, 2), common_v, marker='o', color='red',label='theory')
+plt.plot(range(-6, 2), ssum, marker='s', color='blue',label='practice')
 plt.xlabel('Distance')
 plt.ylabel('Variance')
 plt.title(r'the common $\sigma^2$')
 plt.grid(True)
+plt.legend()
 # 保存图像
 plt.savefig('the common variance.png')
 plt.show()
