@@ -9,6 +9,8 @@ data = np.genfromtxt('data_0.txt', delimiter=' ')
 def euclDistance(vector1, vector2):
     return np.sqrt(sum((vector1 - vector2)**2))
 
+def ManhattanDistance(vector1,vector2):
+    return np.abs(vector1[0]-vector2[0]) + np.abs(vector1[1]-vector2[1])
 time = 0    #记录当前跑到了第几个垂直间隔d   time = 0 对应 d=-6  time = d + 6
 IterTimes = 0  #记录迭代次数   是主要的优化指标（时间方面）
 KmeansTime = 50 #指调用多少次kmeans函数(避免陷入局部最优)

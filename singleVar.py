@@ -43,7 +43,7 @@ def initCentroids(data, k, times):
             minDis = 10000
 
             for j in range(cnt):
-                dis_square_ij = np.square(centroid[j,0] - data[i,0]) + np.square(centroid[j,1] - data[i,1]) #第j个质心和第i个样本点之间的距离
+                dis_square_ij = euclDistance(centroid[j,:], data[i,:]) #第j个质心和第i个样本点之间的距离
                 if(minDis > dis_square_ij):
                     minDis = dis_square_ij  #获得了第i个样本点 对所有质心的距离中 最小的距离    我们的目的是找1000个样本点中 这个最小距离的最大值
 
@@ -54,42 +54,36 @@ def initCentroids(data, k, times):
         centroid = np.vstack((centroid,data[maxDisDataIndex,:]))
         cnt += 1
     return centroid
+
+NumInCluster = [0,0,0,0,0,0]   #维护每个类的数据数量
 # k-means算法函数
 def kmeans(data, k,times):   #times用于指示当前第几次聚类 打印用
     # 计算样本个数
     numSample = data.shape[0]
     # 保存样品属性（第一列保存该样品属于哪个簇，第二列保存该样品与它所属簇的误差（该样品到质心的距离））
     clusterData = np.array(np.zeros((numSample, 2)))
-    # 确定质心是否需要改变
-    clusterChanged = True
     # 初始化质心
     centroids = initCentroids(data, k, times)
 
-    cnt = 0
-    while clusterChanged:
-        cnt += 1
-        global IterTimes   #如果没有这行代码  下一句的IterTimes+=1 
-        IterTimes += 1   
-        clusterChanged = False
-        # 遍历样本
-        for i in range(numSample):
-            # 该样品所属簇（该样品距离哪个质心最近）
-            minIndex = 0
-            # 该样品与所属簇之间的距离
-            minDis = 100000.0
-            # 遍历质心
-            for j in range(k):
-                # 计算该质心与该样品的距离
-                distance = euclDistance(centroids[j, :], data[i, :])
-                # 更新最小距离和所属簇
-                if distance < minDis:
-                    minDis = distance
-                    clusterData[i, 1] = minDis
-                    minIndex = j
+    # 遍历样本
+    for i in range(numSample):
+        # 该样品所属簇（该样品距离哪个质心最近）
+        minIndex = 0
+        # 该样品与所属簇之间的距离
+        minDis = 100000.0
+        # 遍历质心
+        for j in range(k):
+            # 计算该质心与该样品的距离
+            distance = euclDistance(centroids[j, :], data[i, :])
+            # 更新最小距离和所属簇
+            if distance < minDis:
+                minDis = distance
+                clusterData[i, 1] = minDis
+                minIndex = j
+                NumInCluster[j] += 1
             # 如果该样品所属的簇发生了改变，则更新为最新的簇属性，且判断继续更新簇
             if clusterData[i, 0] != minIndex:
                 clusterData[i, 0] = minIndex
-                clusterChanged = True
         # 更新质心
         for j in range(k):
             # 获取样本中属于第j个簇的所有样品的索引
@@ -99,7 +93,23 @@ def kmeans(data, k,times):   #times用于指示当前第几次聚类 打印用
             # 重新计算质心(取所有属于该簇样品的按列平均值)
             centroids[j, :] = np.mean(pointsInCluster, axis=0)
 
-    print(f"迭代{cnt}次后 每个样本所属类不再变化")
+    for i in range(numSample):
+        p_i = clusterData[i,1] * clusterData[i,1] * NumInCluster[i] / (NumInCluster[i] - 1)   #损失函数减小的部分
+        t = 10000
+        newCluster = -1
+        for j in range(k):
+            if(j == clusterData[i,0]):  #如果类j 就是 样本i所在类  跳过
+                continue
+            p_j = clusterData[i,1] * clusterData[i,1] * NumInCluster[i] / (NumInCluster[i] + 1)   #J增加的部分
+            if(t > p_j):
+                t = p_j
+                newCluster = j
+        #经过这个for循环  找到移动后增加损失函数最小的类
+
+        
+            
+
+
     return centroids, clusterData
 
 # 显示分类结果
@@ -183,7 +193,7 @@ for i in range(-6, 2):
     min_loss = 10000
     min_loss_centroids = np.array([])
     min_loss_clusterData = np.array([])
-    for j in range(KmeansTime):    #共执行50*8 = 400次
+    for j in range(KmeansTime):    #共执行KmeansTime*8 = 400次
         centroids, clusterData = kmeans(data, k,j)
         loss = np.mean((np.square(clusterData[:, 1])))
         print(f"这一次的损失函数值为{loss}")
