@@ -287,7 +287,7 @@ for i in range(num_rows):
 plt.tight_layout()
 plt.axis('equal') 
 # 保存图像
-plt.savefig('mean_trend_x.png')
+plt.savefig('mean_trend.png')
 
 # 显示图像 ------------------------------------------meanY
 plt.show()
