@@ -11,7 +11,7 @@ def euclDistance(vector1, vector2):
 
 time = 0    #记录当前跑到了第几个垂直间隔d   time = 0 对应 d=-6  time = d + 6
 IterTimes = 0  #记录迭代次数   是主要的优化指标（时间方面）
-KmeansTime = 100 #指调用多少次kmeans函数(避免陷入局部最优)
+KmeansTime = 200 #指调用多少次kmeans函数(避免陷入局部最优)
 
 def initCentroids(data, k,times):
     numSample, dim = data.shape
@@ -121,7 +121,7 @@ def kmeans(data, k,times):   #times用于指示当前第几次聚类 打印用
 
                 NumInCluster[t] -= 1
                 clusterData[i,:] = [newCluster,euclDistance(data[i,:],centroids[newCluster,:])]  #将第i个样本点放到新类中 更新类标签和距离 原先样本点就直接被覆盖了 
-                NumInCluster[newCluster] += 1     #原先类数量加1  新类样本数量加1
+                NumInCluster[newCluster] += 1     #原先类数量减1  新类样本数量加1
 
                 ChangeFlag = True
             
@@ -152,7 +152,7 @@ def showCluster(data, k, centroids, clusterData):
     # 画质心点
     for i in range(k):
         plt.plot(centroids[i, 0], centroids[i, 1], mark[7], markersize=20)
-    plt.show()
+    #plt.show()
 
 # 设置k值
 k = 6
@@ -236,7 +236,7 @@ for i in range(-6, 2):
     np.savetxt(f"data{i}.txt",clusterData)
     
     pngname = f'png_{i}.png'
-    #Plot(data, k, centroids, clusterData, pngname)
+    Plot(data, k, centroids, clusterData, pngname)
     # 计算每个簇误差的方差
     cluster_ids = np.unique(clusterData[:, 0])  # 获取所有簇的唯一标识 返回0，1，2，3，4，5
     variances = []
