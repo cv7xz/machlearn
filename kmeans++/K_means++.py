@@ -11,9 +11,12 @@ def euclDistance(vector1, vector2):
 
 def ManhattanDistance(vector1,vector2):
     return np.abs(vector1[0]-vector2[0]) + np.abs(vector1[1]-vector2[1])
+
+def cos_sim(vec1,vec2):
+    return 1 - vec1.dot(vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))   #不同的距离函数
 time = 0    #记录当前跑到了第几个垂直间隔d   time = 0 对应 d=-6  time = d + 6
 IterTimes = 0  #记录迭代次数   是主要的优化指标（时间方面）
-KmeansTime = 100 #指调用多少次kmeans函数(避免陷入局部最优)
+KmeansTime = 50 #指调用多少次kmeans函数(避免陷入局部最优)
 
 #修改kmeans还是kmeans++  只是调用初始化质心函数不同 改变即可
 # def initCentroids(data, k,times):        
@@ -84,6 +87,7 @@ def kmeans(data, k,times):   #times用于指示当前第几次聚类 打印用
             for j in range(k):
                 # 计算该质心与该样品的距离
                 distance = euclDistance(centroids[j, :], data[i, :])
+                
                 # 更新最小距离和所属簇
                 if distance < minDis:
                     minDis = distance
@@ -189,7 +193,7 @@ for i in range(-6, 2):
     for j in range(KmeansTime):    #共执行50*8 = 400次
         centroids, clusterData = kmeans(data, k,j)
         loss = np.mean((np.square(clusterData[:, 1])))
-        print(f"这一次的损失函数值为{loss}")
+        print(f"这一次的损失函数值为{loss}")    #针对欧式距离的损失函数
         if loss < min_loss:
             min_loss = loss
             min_loss_centroids = centroids
@@ -223,7 +227,6 @@ for i in range(-6, 2):
     meanListY.append(sorted_centroid[:,1])
     variances_list.append(sorted_variances)
     
-
 endtime = datetime.datetime.now()
 print(f"一共用时{(endtime - starttime).seconds}.{(endtime - starttime).microseconds//1000}秒")
 print(f"一共迭代（kmeans的一次步骤）{IterTimes}次")
@@ -252,11 +255,7 @@ for i in range(num_rows):
 
 # 调整子图之间的间距
 plt.tight_layout()
-
-# 保存图像
 plt.savefig('variance_trends.png')
-
-# 显示图像
 plt.show()
 
 #------------------------------------------mean
@@ -278,7 +277,6 @@ for i in range(num_rows):
 
 plt.tight_layout()
 plt.axis('equal') 
-# 保存图像
 plt.savefig('mean_trend.png')
 plt.show()
 
@@ -296,10 +294,8 @@ for i in range(num_rows):
 #调整子图之间的间距
 plt.tight_layout()
 plt.axis('equal') 
-# 保存图像
 plt.savefig('mean_trend_x.png')
 plt.show()
-# 显示图像 
 # ------------------------------------------meanY
 
 fig, axes = plt.subplots(num_rows, num_cols, figsize=(15, 8))
@@ -315,11 +311,7 @@ for i in range(num_rows):
             ax.set_ylabel('meanY')
 # 调整子图之间的间距
 plt.tight_layout()
-
-# 保存图像
 plt.savefig('mean_trends_y.png')
-
-# 显示图像
 plt.show()
 #计算每组中心点的两两距离最大值,得到一般方差
 common_v = []
