@@ -201,7 +201,7 @@ for i in range(-6, 2):
     np.savetxt(f"data{i}.txt",clusterData)
     
     pngname = f'png_{i}.png'
-    #Plot(data, k, centroids, clusterData, pngname)
+    Plot(data, k, centroids, clusterData, pngname)
     # 计算每个簇误差的方差
     cluster_ids = np.unique(clusterData[:, 0])  # 获取所有簇的唯一标识 返回0，1，2，3，4，5
     variances = []
@@ -258,7 +258,7 @@ plt.savefig('variance_trends.png')
 # 显示图像
 plt.show()
 
-#------------------------------------------meanX
+#------------------------------------------mean
 fig, axes = plt.subplots(num_rows, num_cols, figsize=(15, 8))
 
 # 绘制每个子图  
@@ -280,6 +280,9 @@ plt.axis('equal')
 # 保存图像
 plt.savefig('mean_trend.png')
 plt.show()
+
+#------------------------------------------meanX
+fig, axes = plt.subplots(num_rows, num_cols, figsize=(15, 8))
 for i in range(num_rows):
    for j in range(num_cols):
        idx = i * num_cols + j
@@ -294,9 +297,10 @@ plt.tight_layout()
 plt.axis('equal') 
 # 保存图像
 plt.savefig('mean_trend_x.png')
-
-# 显示图像 ------------------------------------------meanY
 plt.show()
+# 显示图像 
+# ------------------------------------------meanY
+
 fig, axes = plt.subplots(num_rows, num_cols, figsize=(15, 8))
 # 绘制每个子图
 for i in range(num_rows):

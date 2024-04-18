@@ -45,13 +45,14 @@ def initCentroids(data, k, times):
             for j in range(cnt):
                 dis_square_ij = euclDistance(centroid[j,:], data[i,:]) #第j个质心和第i个样本点之间的距离
                 if(minDis > dis_square_ij):
-                    minDis = dis_square_ij  #获得了第i个样本点 对所有质心的距离中 最小的距离    我们的目的是找1000个样本点中 这个最小距离的最大值
+                    minDis = dis_square_ij  
+            #获得了第i个样本点 对所有质心的距离中 最小的距离    我们的目的是找1000个样本点中 这个最小距离的最大值
 
             if(maxDis < minDis):  #找到这个最小距离最大的样本点
                 maxDis = minDis
                 maxDisDataIndex = i 
         
-        centroid = np.vstack((centroid,data[maxDisDataIndex,:]))
+        centroid = np.vstack((centroid,data[maxDisDataIndex,:]))  #将新获得质心添到数组中 
         cnt += 1
     return centroid
 
