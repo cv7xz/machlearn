@@ -53,7 +53,7 @@ def initCentroids(data, k, times):
                 maxDis = minDis
                 maxDisDataIndex = i 
         
-        centroid = np.vstack((centroid,data[maxDisDataIndex,:]))
+        centroid = np.vstack((centroid,data[maxDisDataIndex,:])) #新添质心
         cnt += 1
     return centroid
 # k-means算法函数
@@ -274,20 +274,26 @@ for i in range(num_rows):
         ax.set_xlabel('x')
         ax.set_ylabel('y')
         ax.set_xlim(-12+rank*5, -2+rank*5)
-#for i in range(num_rows):
-#    for j in range(num_cols):
-#        idx = i * num_cols + j
-#        if idx < num_plots:
-#            ax = axes[i, j] if num_rows > 1 else axes[j]
-#            ax.plot(range(-6, 2), [v[idx] for v in meanListX], marker='o')
-#            ax.set_title(f'Variance {idx+1}')
-#            ax.set_xlabel('Distance')
-#            ax.set_ylabel('meanX')
-# 调整子图之间的间距
+
 plt.tight_layout()
 plt.axis('equal') 
 # 保存图像
 plt.savefig('mean_trend.png')
+plt.show()
+for i in range(num_rows):
+   for j in range(num_cols):
+       idx = i * num_cols + j
+       if idx < num_plots:
+           ax = axes[i, j] if num_rows > 1 else axes[j]
+           ax.plot(range(-6, 2), [v[idx] for v in meanListX], marker='o')
+           ax.set_title(f'meanX {idx+1}')
+           ax.set_xlabel('Distance')
+           ax.set_ylabel('meanX')
+#调整子图之间的间距
+plt.tight_layout()
+plt.axis('equal') 
+# 保存图像
+plt.savefig('mean_trend_x.png')
 
 # 显示图像 ------------------------------------------meanY
 plt.show()
@@ -299,7 +305,7 @@ for i in range(num_rows):
         if idx < num_plots:
             ax = axes[i, j] if num_rows > 1 else axes[j]
             ax.plot(range(-6, 2), [v[idx] for v in meanListY], marker='o')
-            ax.set_title(f'Variance {idx+1}')
+            ax.set_title(f'meanY {idx+1}')
             ax.set_xlabel('Distance')
             ax.set_ylabel('meanY')
 # 调整子图之间的间距

@@ -11,9 +11,9 @@ def euclDistance(vector1, vector2):
 
 time = 0    #记录当前跑到了第几个垂直间隔d   time = 0 对应 d=-6  time = d + 6
 IterTimes = 0  #记录迭代次数   是主要的优化指标（时间方面）
-KmeansTime = 200 #指调用多少次kmeans函数(避免陷入局部最优)
+KmeansTime = 50 #指调用多少次kmeans函数(避免陷入局部最优)
 
-def initCentroids(data, k,times):
+def initCentroid(data, k,times):
     numSample, dim = data.shape
     print("---------------------------------")
     print(f"({(6+time)*KmeansTime+times}/{8*KmeansTime})距离d={time}, 第{times}次选初始质心")
@@ -28,32 +28,32 @@ def initCentroids(data, k,times):
     return centroids
 
 # 初始化质心（初始化各个类别的中心点）
-# def initCentroids(data, k, times):
-#     numSample,dim = data.shape
-#     index = np.random.randint(0,numSample)
+def initCentroids(data, k, times):
+    numSample,dim = data.shape
+    index = np.random.randint(0,numSample)
 
-#     centroid = np.array(data[index,:]).reshape(1,-1)   #1维变成2维数组  一行n列
-#     print("---------------------------------")
-#     print(f"({(6+time)*KmeansTime+times}/{8*KmeansTime})距离d={time}, 第{times}次选初始质心")
-#     cnt = 1
-#     while cnt < k:
-#         maxDis = 0
-#         maxDisDataIndex = -1
-#         for i in range(numSample):
-#             minDis = 10000
+    centroid = np.array(data[index,:]).reshape(1,-1)   #1维变成2维数组  一行n列
+    print("---------------------------------")
+    print(f"({(6+time)*KmeansTime+times}/{8*KmeansTime})距离d={time}, 第{times}次选初始质心")
+    cnt = 1
+    while cnt < k:
+        maxDis = 0
+        maxDisDataIndex = -1
+        for i in range(numSample):
+            minDis = 10000
 
-#             for j in range(cnt):
-#                 dis_square_ij = euclDistance(centroid[j,:], data[i,:]) #第j个质心和第i个样本点之间的距离
-#                 if(minDis > dis_square_ij):
-#                     minDis = dis_square_ij  #获得了第i个样本点 对所有质心的距离中 最小的距离    我们的目的是找1000个样本点中 这个最小距离的最大值
+            for j in range(cnt):
+                dis_square_ij = euclDistance(centroid[j,:], data[i,:]) #第j个质心和第i个样本点之间的距离
+                if(minDis > dis_square_ij):
+                    minDis = dis_square_ij  #获得了第i个样本点 对所有质心的距离中 最小的距离    我们的目的是找1000个样本点中 这个最小距离的最大值
 
-#             if(maxDis < minDis):  #找到这个最小距离最大的样本点
-#                 maxDis = minDis
-#                 maxDisDataIndex = i 
+            if(maxDis < minDis):  #找到这个最小距离最大的样本点
+                maxDis = minDis
+                maxDisDataIndex = i 
         
-#         centroid = np.vstack((centroid,data[maxDisDataIndex,:]))
-#         cnt += 1
-#     return centroid
+        centroid = np.vstack((centroid,data[maxDisDataIndex,:]))
+        cnt += 1
+    return centroid
 
 NumInCluster = [0,0,0,0,0,0]   #维护每个类的数据数量
 # k-means算法函数
@@ -297,27 +297,27 @@ plt.show()
 fig, axes = plt.subplots(num_rows, num_cols, figsize=(15, 8))
 
 # 绘制每个子图  
-# for i in range(num_rows):
-#     for j in range(num_cols):
-#         ax = axes[i, j] if num_rows > 1 else axes[j]
-#         rank=i*num_cols+j #重心序号
-#         for t in range(7): #d数量
-#             ax.scatter(meanListX[t][rank], meanListY[t][rank], color='red')
-#             ax.plot([meanListX[t][rank], meanListX[t+1][rank]], [meanListY[t][rank], meanListY[t+1][rank]], color='blue')
-#         ax.scatter(meanListX[7][rank], meanListY[7][rank], color='black')
-#         ax.set_title(f'means-{rank+1} change')
-#         ax.set_xlabel('x')
-#         ax.set_ylabel('y')
-#         ax.set_xlim(-12+rank*5, -2+rank*5)
 for i in range(num_rows):
-   for j in range(num_cols):
-       idx = i * num_cols + j
-       if idx < num_plots:
-           ax = axes[i, j] if num_rows > 1 else axes[j]
-           ax.plot(range(-6, 2), [v[idx] for v in meanListX], marker='o')
-           ax.set_title(f'Variance {idx+1}')
-           ax.set_xlabel('Distance')
-           ax.set_ylabel('meanX')
+    for j in range(num_cols):
+        ax = axes[i, j] if num_rows > 1 else axes[j]
+        rank=i*num_cols+j #重心序号
+        for t in range(7): #d数量
+            ax.scatter(meanListX[t][rank], meanListY[t][rank], color='red')
+            ax.plot([meanListX[t][rank], meanListX[t+1][rank]], [meanListY[t][rank], meanListY[t+1][rank]], color='blue')
+        ax.scatter(meanListX[7][rank], meanListY[7][rank], color='black')
+        ax.set_title(f'means-{rank+1} change')
+        ax.set_xlabel('x')
+        ax.set_ylabel('y')
+        ax.set_xlim(-12+rank*5, -2+rank*5)
+# for i in range(num_rows):
+#    for j in range(num_cols):
+#        idx = i * num_cols + j
+#        if idx < num_plots:
+#            ax = axes[i, j] if num_rows > 1 else axes[j]
+#            ax.plot(range(-6, 2), [v[idx] for v in meanListX], marker='o')
+#            ax.set_title(f'Variance {idx+1}')
+#            ax.set_xlabel('Distance')
+#            ax.set_ylabel('meanX')
 # 调整子图之间的间距
 plt.tight_layout()
 plt.axis('equal') 
