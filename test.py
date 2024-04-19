@@ -1,5 +1,16 @@
-import numpy as np
+from threading import Thread
 
-a = np.array([1,2,3,5,4])
+threads = [None] * 10
+results = [None] * 10
 
-print(np.var(a))
+def foo(bar, result, index):
+    result[index] = f"foo-{index}"
+
+for i in range(len(threads)):
+    threads[i] = Thread(target=foo, args=('world!', results, i))
+    threads[i].start()
+
+for i in range(len(threads)):
+    threads[i].join()
+
+print (" ".join(results))
